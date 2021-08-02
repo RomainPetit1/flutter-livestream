@@ -1,0 +1,37 @@
+PODS:
+  - Flutter (1.0.0)
+  - HaishinKit (1.1.5):
+    - Logboard (~> 2.2.1)
+  - LiveStreamIos (0.0.2):
+    - HaishinKit (~> 1.1.0)
+  - Logboard (2.2.2)
+  - plugin (0.0.1):
+    - Flutter
+    - LiveStreamIos (~> 0.0.2)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - plugin (from `.symlinks/plugins/plugin/ios`)
+
+SPEC REPOS:
+  trunk:
+    - HaishinKit
+    - LiveStreamIos
+    - Logboard
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  plugin:
+    :path: ".symlinks/plugins/plugin/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  HaishinKit: 5cf385a823dee6b299404877edf418974422bf9f
+  LiveStreamIos: dffd0e5d6f9fb712f72ac87eb018e0396bc1284e
+  Logboard: 0ab6bbd984ed032b3f0b615cef06779a73445c80
+  plugin: 32b0988f90bc885334aed85b7136245ea5391176
+
+PODFILE CHECKSUM: fe0e1ee7f3d1f7d00b11b474b62dd62134535aea
+
+COCOAPODS: 1.10.1
