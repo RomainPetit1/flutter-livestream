@@ -47,39 +47,55 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    final ButtonStyle style =
+        ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 20));
+
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: _cameraPreviewWidget(),
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: _cameraPreviewWidget(),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton(
+                    style: style,
+                    onPressed: null,
+                    child: const Text('Disabled'),
+                  ),
+                  const SizedBox(width: 30),
+                  ElevatedButton(
+                    style: style,
+                    onPressed: () {
+                      Plugin.startStream();
+                    },
+                    child: const Text('Start'),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _cameraPreviewWidget() {
-    final Plugin? cameraController = controller;
-    if (cameraController == null) {
-      return const Text(
-        'camera controler null',
-        style: TextStyle(
-          color: Colors.black,
-          backgroundColor: Colors.lightBlue,
-          fontSize: 24.0,
-          fontWeight: FontWeight.w900,
-        ),
-      );
-    } else {
-      return Listener(
-        onPointerDown: (_) => _pointers++,
-        onPointerUp: (_) => _pointers--,
-        child: LiveStreamPreview(
-          controller!,
-        ),
-      );
-    }
+    final plugin = Plugin();
+
+    return Container(
+      color: Colors.lightBlueAccent,
+      child: LiveStreamPreview(
+        controller: plugin,
+        liveStreamKey: 'd08c582e-e251-4f9e-9894-8c8d69755d45',
+        videoResolution: '2160p',
+      ),
+    );
   }
 }
-

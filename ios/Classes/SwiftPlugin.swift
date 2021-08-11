@@ -8,8 +8,8 @@ public class SwiftPlugin: NSObject, FlutterPlugin {
         let channel = FlutterMethodChannel(name: "plugin", binaryMessenger: registrar.messenger())
         let instance = SwiftPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
-//        let factory = LiveStreamViewFactory(messenger: registrar.messenger())
-//        registrar.register(factory, withId: "<platform-view-type>")
+        let factory = LiveStreamViewFactory(messenger: registrar.messenger())
+        registrar.register(factory, withId: "<plugin>")
     }
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         result("iOS " + UIDevice.current.systemVersion)
@@ -39,6 +39,7 @@ class LiveStreamViewFactory: NSObject, FlutterPlatformViewFactory {
 
 class LiveStreamNativeView: NSObject, FlutterPlatformView {
     private var _view: LiveStreamView
+    private var channel: FlutterMethodChannel!
 
     init(
         frame: CGRect,
@@ -48,6 +49,12 @@ class LiveStreamNativeView: NSObject, FlutterPlatformView {
     ) {
         _view = LiveStreamView()
         super.init()
+        
+        channel = FlutterMethodChannel(name: "plugin_\(viewId)", binaryMessenger: messenger!)
+        channel.setMethodCallHandler { [weak self] (call, result) in
+                    self?.handlerMethodCall(call, result)
+                }
+        
         // iOS views can be created here
         //createNativeView(view: _view)
     }
@@ -55,6 +62,29 @@ class LiveStreamNativeView: NSObject, FlutterPlatformView {
     func view() -> UIView {
         return _view
     }
+    
+    func handlerMethodCall(_ call: FlutterMethodCall, _ result: FlutterResult)  {
+            switch call.method {
+            case "startStreaming":
+                _view.startStreaming()
+                break
+            case "stopStreamin":
+                _view.stopStreaming()
+                break
+            case "setLivestreamKey":
+                let key = call.arguments as! String
+                print("key: \(key)")
+                _view.liveStreamKey = key
+            case "setParam":
+                let data = call.arguments
+                let jsonData = try? JSONSerialization.data(withJSONObject:data!)
+                print("jsonData: \(String(describing: jsonData))")
+
+            
+            default:
+                break
+            }
+        }
 
     func createNativeView(view _view: UIView){
         _view.backgroundColor = UIColor.blue
