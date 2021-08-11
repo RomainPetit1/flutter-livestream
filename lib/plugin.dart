@@ -92,24 +92,40 @@ class _LiveStreamPreviewState extends State<LiveStreamPreview> {
 
   @override
   Widget build(BuildContext context) {
-    final String viewType = '<plugin>';
+    final String viewType = '<platform-view-type>';
+    final String hybridViewType = '<hybrid-view-type>';
     // Pass parameters to the platform side.
 
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         // return widget on Android.
         return SizedBox(
-          height: 400,
-          child: AndroidView(
-            viewType: viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: createParams(),
-            onPlatformViewCreated: (viewId) {
-              _channel = MethodChannel('plugin_$viewId');
-            },
-            creationParamsCodec: const StandardMessageCodec(),
-          ),
-        );
+            height: 400,
+            child: PlatformViewLink(
+              viewType: viewType,
+              surfaceFactory: (BuildContext context, dynamic controller) {
+                return AndroidViewSurface(
+                  controller: controller,
+                  gestureRecognizers: const <
+                      Factory<OneSequenceGestureRecognizer>>{},
+                  hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+                );
+              },
+              onCreatePlatformView: (PlatformViewCreationParams params) {
+                return PlatformViewsService.initSurfaceAndroidView(
+                  id: params.id,
+                  viewType: viewType,
+                  layoutDirection: TextDirection.ltr,
+                  creationParams: createParams(),
+                  creationParamsCodec: StandardMessageCodec(),
+                )
+                  ..addOnPlatformViewCreatedListener((id) {
+                    _channel = MethodChannel('plugin_$id');
+                    //_channel.setMethodCallHandler(_handlerCall);
+                  })
+                  ..create();
+              },
+            ));
 
       case TargetPlatform.iOS:
         return SizedBox(

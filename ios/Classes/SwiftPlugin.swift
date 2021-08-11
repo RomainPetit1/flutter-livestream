@@ -9,7 +9,7 @@ public class SwiftPlugin: NSObject, FlutterPlugin {
         let instance = SwiftPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
         let factory = LiveStreamViewFactory(messenger: registrar.messenger())
-        registrar.register(factory, withId: "<plugin>")
+        registrar.register(factory, withId: "<platform-view-type>")
     }
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         result("iOS " + UIDevice.current.systemVersion)

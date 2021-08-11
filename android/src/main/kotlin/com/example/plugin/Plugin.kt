@@ -1,9 +1,11 @@
 package com.example.plugin
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import androidx.annotation.NonNull
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.pedro.rtplibrary.view.OpenGlView
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
@@ -15,9 +17,10 @@ import io.flutter.plugin.platform.PlatformView
 import io.flutter.plugin.platform.PlatformViewFactory
 import net.ossrs.rtmp.ConnectCheckerRtmp
 import video.api.livestream_module.ApiVideoLiveStream
+import java.lang.Exception
 
 /** Plugin */
-class Plugin: FlutterPlugin, MethodCallHandler {
+class Plugin: FlutterPlugin{
   private lateinit var channel : MethodChannel
 
   override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -26,20 +29,21 @@ class Plugin: FlutterPlugin, MethodCallHandler {
 
     flutterPluginBinding
      .platformViewRegistry
-     .registerViewFactory("<plugin>", NativeViewFactory(flutterPluginBinding.binaryMessenger))
+     .registerViewFactory("<platform-view-type>", NativeViewFactory(flutterPluginBinding.binaryMessenger))
   }
 
-  override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+  /*override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
     if (call.method == "getPlatformVersion") {
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     }
     if (call.method == "startStreaming") {
+      Log.e("method start streaming", "called")
 
     }
     else {
       result.notImplemented()
     }
-  }
+  }*/
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
     channel.setMethodCallHandler(null)
@@ -55,21 +59,29 @@ class LiveStreamView(context: Context): ConstraintLayout(context){
 internal class LiveStreamNativeView(context: Context, id: Int, creationParams: Map<String?, Any?>?, messenger: BinaryMessenger):
   PlatformView, ConnectCheckerRtmp, MethodCallHandler {
 
-  private var view: LiveStreamView? = null
+  private var channel : MethodChannel = MethodChannel(messenger, "plugin")
+
+  private var view: LiveStreamView
   private var apiVideo: ApiVideoLiveStream
   private var livestreamKey: String = ""
   private var url : String? = null
   private var methodChannel: MethodChannel? = null
 
   override fun getView(): View {
-    return view!!.findViewById(R.id.opengl_view)
+    return view.findViewById(R.id.opengl_view)
   }
   override fun dispose() {
-    TODO("Not yet implemented")
+    try {
+      methodChannel?.setMethodCallHandler(null)
+    }catch (e: Exception){
+      Log.e("MethodCallHandler","Already null")
+    }
   }
 
   init {
+    channel.setMethodCallHandler(this)
     view = LiveStreamView(context)
+    val openGlView = view.findViewById<OpenGlView>(R.id.opengl_view)
     apiVideo = ApiVideoLiveStream(context, this, null, null)
     initMethodChannel(messenger, id);
   }
@@ -80,27 +92,27 @@ internal class LiveStreamNativeView(context: Context, id: Int, creationParams: M
   }
 
   override fun onConnectionSuccessRtmp() {
-    TODO("Not yet implemented")
+    Log.i("Rtmp Connection", "success")
   }
 
   override fun onConnectionFailedRtmp(reason: String?) {
-    TODO("Not yet implemented")
+    Log.e("Rtmp Connection", "failed")
   }
 
   override fun onNewBitrateRtmp(bitrate: Long) {
-    TODO("Not yet implemented")
+    Log.i("New rtmp bitrate", "$bitrate")
   }
 
   override fun onDisconnectRtmp() {
-    TODO("Not yet implemented")
+    Log.i("Rtmp connetion", "On disconnect")
   }
 
   override fun onAuthErrorRtmp() {
-    TODO("Not yet implemented")
+    Log.e("Rtmp Auth", "error")
   }
 
   override fun onAuthSuccessRtmp() {
-    TODO("Not yet implemented")
+    Log.i("Rtmp Auth", "success")
   }
 
   private fun setUrl(newUrl: String?){
@@ -112,10 +124,15 @@ internal class LiveStreamNativeView(context: Context, id: Int, creationParams: M
 
   }
 
+  private fun startLive(){
+    Log.e("startlive method","called")
+    apiVideo.startStreaming(livestreamKey, url)
+  }
+
   override fun onMethodCall(call: MethodCall, result: Result) {
     when (call.method){
       "setLivestreamKey" -> livestreamKey = call.arguments.toString()
-      "startStreaming" -> apiVideo.startStreaming(livestreamKey, url)
+      "startStreaming" -> startLive()
     }
   }
 
