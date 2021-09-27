@@ -43,6 +43,8 @@
 	<false/>
 	<key></key>
 	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app need access to your library</string>
     <key>NSCameraUsageDescription</key>
     <string>Your own description of the purpose</string>
     <key>NSMicrophoneUsageDescription</key>

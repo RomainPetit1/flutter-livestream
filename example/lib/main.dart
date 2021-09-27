@@ -42,8 +42,10 @@ class _MyAppState extends State<MyApp> {
                 children: [
                   ElevatedButton(
                     style: style,
-                    onPressed: null,
-                    child: const Text('Disabled'),
+                    onPressed: () {
+                      Plugin.changeMute();
+                    },
+                    child: const Text('switch'),
                   ),
                   const SizedBox(width: 30),
                   ElevatedButton(

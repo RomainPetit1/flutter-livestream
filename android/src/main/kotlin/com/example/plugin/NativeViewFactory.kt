@@ -14,6 +14,7 @@ class NativeViewFactory(private val messenger: BinaryMessenger): PlatformViewFac
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
         val creationParams = args as Map<String?, Any?>?
         this.mess = messenger
+
         return LiveStreamNativeView(context, viewId, creationParams, this.mess)
     }
 }

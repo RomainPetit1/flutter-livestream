@@ -14,17 +14,17 @@ class Plugin {
     return version;
   }
 
-  static void startStream() async {
+  static Future<void> startStream() async {
     await _channel.invokeMethod('startStreaming');
   }
 
-  // Widget buildPreview() {
-  //   try {
-  //     return CameraPlatform.instance.buildPreview(1);
-  //   } on PlatformException catch (e) {
-  //     throw CameraException(e.code, e.message);
-  //   }
-  // }
+  static void switchCamera() async {
+    await _channel.invokeMethod('switchCamera');
+  }
+
+  static void changeMute() async {
+    await _channel.invokeMethod('changeMute');
+  }
 }
 
 class LiveStreamPreview extends StatefulWidget {
@@ -93,12 +93,10 @@ class _LiveStreamPreviewState extends State<LiveStreamPreview> {
   @override
   Widget build(BuildContext context) {
     final String viewType = '<platform-view-type>';
-    final String hybridViewType = '<hybrid-view-type>';
     // Pass parameters to the platform side.
 
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        // return widget on Android.
         return SizedBox(
             height: 400,
             child: PlatformViewLink(
