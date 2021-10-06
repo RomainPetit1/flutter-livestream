@@ -75,10 +75,11 @@ class LiveStreamNativeView: NSObject, FlutterPlatformView {
                 let key = call.arguments as! String
                 print("key: \(key)")
                 _view.liveStreamKey = key
+                print(_view.liveStreamKey)
             case "setParam":
                 let data = call.arguments
-                let jsonData = try? JSONSerialization.data(withJSONObject:data!)
-                print("jsonData: \(String(describing: jsonData))")
+//                let jsonData = try? JSONSerialization.data(withJSONObject:data!)
+//                print("jsonData: \(String(describing: jsonData))")
 
             
             default:
